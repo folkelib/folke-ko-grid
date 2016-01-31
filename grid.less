@@ -1,0 +1,56 @@
+﻿@row-background-hover: #333;
+@row-background-even: #DDD;
+
+grid, table.grid {
+    border-collapse:collapse;
+
+    tr, .row {
+        display: table-row;
+        cursor: pointer;
+        
+        &:nth-child(even) {
+            background-color: @row-background-even;
+        }
+        
+        &:hover {
+            background-color: @row-background-hover;
+
+            td, .cell {
+                color: white;
+            }
+        }
+                
+        td, .cell {
+            padding: 5px;
+            display: table-cell;
+        }
+    }
+
+    th {
+        &.asc {
+            cursor: pointer;
+            &::after {
+                .fa;
+                content: @fa-var-long-arrow-down;
+            }
+            background: @row-background-hover;
+            color: white;
+        }
+        &.desc {
+            cursor: pointer;
+            &::after {
+                .fa;
+                content: @fa-var-long-arrow-up;
+            }
+            background: @row-background-hover;
+            color: white;
+        }
+        &.asc-desc {
+            cursor: pointer;
+            &::after {
+                .fa;
+                content: @fa-var-arrows-v;
+            }
+        }
+    }
+}
