@@ -27,7 +27,7 @@ export interface Column {
 /**
  * A KnockoutObservableArray with methods to request more data
  */
-export interface SearchArray<T, TU> extends KnockoutObservableArray<T>, infiniteScroll.ScrollableValue {
+export interface SearchArray<T, TU> extends KnockoutObservableArray<T> {
     sortColumn: KnockoutObservable<string>;
     options: Options<T, TU>;
     subscription: KnockoutSubscription;
@@ -38,6 +38,8 @@ export interface SearchArray<T, TU> extends KnockoutObservableArray<T>, infinite
     
     updating: KnockoutObservable<boolean>
     done: KnockoutObservable<boolean>
+
+    loadNext();
 }
 
 /**
@@ -91,17 +93,19 @@ export function searchArrayExtension<T, TU>(target: SearchArray<T,TU>, options:O
 
         function load(empty: boolean) {
             return newOptions.request({ sortColumn: target.sortColumn(), offset: empty ? 0 : target().length, limit: newOptions.limit, filter: newOptions.filter }).then(values => {
+                // Set to false before updating the value because somebody may listen to the array and want to add more elements
+                target.updating(false);
+                if (values.length < options.limit) {
+                    target.done(true);
+                }
+
                 if (empty) {
                     target(values);
                 }
                 else if (values.length > 0) {
                     ko.utils.arrayPushAll(target, values);
                 }
-                if (values.length < options.limit) {
-                    target.done(true);
-                }
-
-                target.updating(false);
+                
                 return values;
             },() => {
                     target.done(true);

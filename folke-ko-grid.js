@@ -35,16 +35,17 @@ define(["require", "exports", 'knockout'], function (require, exports, ko) {
             target.options = newOptions;
             function load(empty) {
                 return newOptions.request({ sortColumn: target.sortColumn(), offset: empty ? 0 : target().length, limit: newOptions.limit, filter: newOptions.filter }).then(function (values) {
+                    // Set to false before updating the value because somebody may listen to the array and want to add more elements
+                    target.updating(false);
+                    if (values.length < options.limit) {
+                        target.done(true);
+                    }
                     if (empty) {
                         target(values);
                     }
                     else if (values.length > 0) {
                         ko.utils.arrayPushAll(target, values);
                     }
-                    if (values.length < options.limit) {
-                        target.done(true);
-                    }
-                    target.updating(false);
                     return values;
                 }, function () {
                     target.done(true);
