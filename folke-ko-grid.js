@@ -11,7 +11,8 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.*/
-define(["require", "exports", 'knockout'], function (require, exports, ko) {
+define(["require", "exports", 'knockout', "../folke-ko-infinite-scroll/infinite-scroll"], function (require, exports, ko, infiniteScroll) {
+    "use strict";
     /**
      * Creates an observable array with the SearchArray extensions
      * @param options The options for the SearchArray
@@ -27,45 +28,9 @@ define(["require", "exports", 'knockout'], function (require, exports, ko) {
      * @param options The options
      */
     function searchArrayExtension(target, options) {
-        target.sortColumn = ko.observable(options.defaultSort);
+        target.sortColumn = ko.observable(options.parameters.sortColumn);
         target.subscription = target.sortColumn.subscribe(function (newValue) { return target.refresh(); });
-        target.updating = ko.observable(false);
-        target.done = ko.observable(false);
-        target.setOptions = function (newOptions) {
-            target.options = newOptions;
-            function load(empty) {
-                return newOptions.request({ sortColumn: target.sortColumn(), offset: empty ? 0 : target().length, limit: newOptions.limit, filter: newOptions.filter }).then(function (values) {
-                    // Set to false before updating the value because somebody may listen to the array and want to add more elements
-                    target.updating(false);
-                    if (values.length < options.limit) {
-                        target.done(true);
-                    }
-                    if (empty) {
-                        target(values);
-                    }
-                    else if (values.length > 0) {
-                        ko.utils.arrayPushAll(target, values);
-                    }
-                    return values;
-                }, function () {
-                    target.done(true);
-                    target.updating(false);
-                });
-            }
-            ;
-            target.refresh = function () {
-                target.updating(true);
-                target.done(false);
-                return load(true);
-            };
-            target.loadNext = function () {
-                if (target.updating() || target.done())
-                    return;
-                target.updating(true);
-                load(false);
-            };
-        };
-        target.setOptions(options);
+        infiniteScroll.scrollableArrayExtension(target, options);
     }
     exports.searchArrayExtension = searchArrayExtension;
     ;
@@ -108,7 +73,7 @@ define(["require", "exports", 'knockout'], function (require, exports, ko) {
         }
         ViewModel.prototype.dispose = function () { };
         return ViewModel;
-    })();
+    }());
     exports.ViewModel = ViewModel;
     var viewModel = {
         createViewModel: function (params, componentInfo) {

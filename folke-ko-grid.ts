@@ -24,49 +24,28 @@ export interface Column {
     width?: number;
 }
 
-/**
- * A KnockoutObservableArray with methods to request more data
- */
-export interface SearchArray<T, TU> extends KnockoutObservableArray<T> {
-    sortColumn: KnockoutObservable<string>;
-    options: Options<T, TU>;
-    subscription: KnockoutSubscription;
-
-    setOptions(options: Options<T, TU>);
-
-    refresh: () => Promise<T[]>;
-    
-    updating: KnockoutObservable<boolean>
-    done: KnockoutObservable<boolean>
-
-    loadNext();
+export interface SearchArrayParameters<TU> extends infiniteScroll.RequestParameters {
+    sortColumn: string;
+    filter: TU;
 }
 
 /**
  * The options for a SearchArray
  */
-export interface Options<T, TU> {
-    /** The default sort */
-    defaultSort: string;
-
-    /**
-     * A method that is called to fetch more rows
-     * @param parameters The parameters for the request
-     * @returns {} A promise for the new rows
-     */
-    request: (parameters: { offset: number; limit: number; sortColumn: string; filter: TU }) => Promise<T[]>;
-
-    /** The filter: additional parameters that are sent while doing the request for more data */
-    filter: TU;
-
-    /** The number of rows to load */
-    limit: number;
-
+export interface Options<T, TU> extends infiniteScroll.Options<T, SearchArrayParameters<TU>> {
     /** The message to display if the array is empty. */
     emptyMessage?: string;
 
     /** The columns description */
     columns?: Column[];
+}
+
+/**
+ * A KnockoutObservableArray with methods to request more data
+ */
+export interface SearchArray<T, TU> extends infiniteScroll.ScrollableArray<T, SearchArrayParameters<TU>, Options<T, TU>> {
+    sortColumn: KnockoutObservable<string>;
+    subscription: KnockoutSubscription;
 }
 
 /**
@@ -84,48 +63,9 @@ export function searchArray<T, TU>(options: Options<T, TU>, value?: T[]) {
  * @param options The options
  */
 export function searchArrayExtension<T, TU>(target: SearchArray<T,TU>, options:Options<T,TU>) {
-    target.sortColumn = ko.observable(options.defaultSort);
+    target.sortColumn = ko.observable(options.parameters.sortColumn);
     target.subscription = target.sortColumn.subscribe(newValue => target.refresh());
-    target.updating = ko.observable(false);
-    target.done = ko.observable(false);
-    target.setOptions = newOptions => {
-        target.options = newOptions;
-
-        function load(empty: boolean) {
-            return newOptions.request({ sortColumn: target.sortColumn(), offset: empty ? 0 : target().length, limit: newOptions.limit, filter: newOptions.filter }).then(values => {
-                // Set to false before updating the value because somebody may listen to the array and want to add more elements
-                target.updating(false);
-                if (values.length < options.limit) {
-                    target.done(true);
-                }
-
-                if (empty) {
-                    target(values);
-                }
-                else if (values.length > 0) {
-                    ko.utils.arrayPushAll(target, values);
-                }
-                
-                return values;
-            },() => {
-                    target.done(true);
-                    target.updating(false);
-                });
-        };
-
-        target.refresh = () => {
-            target.updating(true);
-            target.done(false);
-            return load(true);
-        }
-
-        target.loadNext = () => {
-            if (target.updating() || target.done()) return;
-            target.updating(true);
-            load(false);
-        }
-    }
-    target.setOptions(options);
+    infiniteScroll.scrollableArrayExtension(target, options);    
 };
 
 export class ViewModel {
