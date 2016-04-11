@@ -29,7 +29,10 @@ define(["require", "exports", 'knockout', "../folke-ko-infinite-scroll/infinite-
      */
     function searchArrayExtension(target, options) {
         target.sortColumn = ko.observable(options.parameters.sortColumn);
-        target.subscription = target.sortColumn.subscribe(function (newValue) { return target.refresh(); });
+        target.subscription = target.sortColumn.subscribe(function (newValue) {
+            options.parameters.sortColumn = newValue;
+            target.refresh();
+        });
         infiniteScroll.scrollableArrayExtension(target, options);
     }
     exports.searchArrayExtension = searchArrayExtension;

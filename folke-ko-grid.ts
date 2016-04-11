@@ -64,7 +64,10 @@ export function searchArray<T, TU>(options: Options<T, TU>, value?: T[]) {
  */
 export function searchArrayExtension<T, TU>(target: SearchArray<T,TU>, options:Options<T,TU>) {
     target.sortColumn = ko.observable(options.parameters.sortColumn);
-    target.subscription = target.sortColumn.subscribe(newValue => target.refresh());
+    target.subscription = target.sortColumn.subscribe(newValue => {
+        options.parameters.sortColumn = newValue;
+        target.refresh();
+    });
     infiniteScroll.scrollableArrayExtension(target, options);    
 };
 
