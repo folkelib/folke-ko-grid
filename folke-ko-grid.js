@@ -15,7 +15,17 @@ define(["require", "exports", 'knockout', "../folke-ko-infinite-scroll/infinite-
     "use strict";
     /**
      * Creates an observable array with the SearchArray extensions
-     * @param options The options for the SearchArray
+     * @param options
+     * @param value
+     */
+    function grid(options, value) {
+        return ko.observableArray(value).extend({ searchArray: options });
+    }
+    exports.grid = grid;
+    /**
+     * Creates an observable array with the SearchArray extensions
+     * Similar to the grid method, but the parameters implements the SearchArrayParameters interface.
+     * @param options The options for the SearchArray (of type SearchArrayParameters<TU>)
      * @param value The initial values
      */
     function searchArray(options, value) {
