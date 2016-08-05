@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/folkelib/folke-ko-grid#readme",
   "dependencies": {
-    "folke-ko-infinite-scroll": "^1.0.4"
+    "folke-ko-infinite-scroll": "^1.0.5"
   },
   "devDependencies": {
     "typescript": "^1.8.10",
