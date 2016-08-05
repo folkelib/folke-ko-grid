@@ -13,7 +13,7 @@ OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.*/
 
 import * as ko from 'knockout';
-import * as infiniteScroll from "../folke-ko-infinite-scroll/infinite-scroll";
+import * as infiniteScroll from "folke-ko-infinite-scroll";
 
 /** Describes a column */
 export interface Column {
@@ -52,8 +52,8 @@ export type SearchArray<T, TU> = Grid<T, SearchArrayParameters<TU>>;
  * A KnockoutObservableArray with methods to request more data
  */
 export interface Grid<T, TU extends Parameters> extends infiniteScroll.ScrollableArray<T, TU, Options<T, TU>> {
-    sortColumn: KnockoutObservable<string>;
-    subscription: KnockoutSubscription;
+    sortColumn: ko.Observable<string>;
+    subscription: ko.subscription<string>;
 }
 
 /**
@@ -93,7 +93,7 @@ export class ViewModel {
     public rows: SearchArray<any, any>;
     public columns: Column[];
     public nodes: Node[];
-    public empty: KnockoutComputed<string>;
+    public empty: ko.Computed<string>;
 
     public columnClass = (column: Column) => {
         const sortElement = column.sort;
@@ -135,7 +135,7 @@ export class ViewModel {
 }
 
 var viewModel = {
-    createViewModel(params: any, componentInfo: KnockoutComponentTypes.ComponentInfo) {
+    createViewModel(params: any, componentInfo: any) {
         var nodes = componentInfo.templateNodes;
         // Petite bidouille pour se débarrasser du tbody qui est rajouté automatiquement si on met un tr dans un table
         var tbody = nodes.filter(x => x.localName === 'tbody')[0];
