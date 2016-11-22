@@ -1,6 +1,6 @@
 {
   "name": "folke-ko-grid",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "A grid of data using Knockout",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

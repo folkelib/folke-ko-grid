@@ -63,6 +63,11 @@ export declare class ViewModel {
     constructor(params: any, nodes: Node[]);
     dispose(): void;
 }
+declare global  {
+    interface KnockoutExtenders {
+        searchArray<T, TU extends Parameters>(target: Grid<T, TU>, options: Options<T, TU>): void;
+    }
+}
 /**
  * Register the extensions
  */

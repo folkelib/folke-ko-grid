@@ -135,7 +135,7 @@ export class ViewModel {
 }
 
 var viewModel = {
-    createViewModel(params: any, componentInfo: any) {
+    createViewModel(params: any, componentInfo: KnockoutComponentTypes.ComponentInfo) {
         var nodes = componentInfo.templateNodes;
         // Petite bidouille pour se débarrasser du tbody qui est rajouté automatiquement si on met un tr dans un table
         var tbody = nodes.filter(x => x.localName === 'tbody')[0];
@@ -170,6 +170,12 @@ var template = `<!-- ko if: empty -->
 </table>
 <div data-bind="infiniteScroll: rows">&nbsp;</div>
 <!-- /ko -->`;
+
+declare global {
+    interface KnockoutExtenders {
+        searchArray<T, TU extends Parameters>(target: Grid<T, TU>, options:Options<T, TU>):void;
+    }
+}
 
 /**
  * Register the extensions
