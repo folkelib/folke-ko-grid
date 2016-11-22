@@ -12,7 +12,7 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.*/
 "use strict";
-var ko = require('knockout');
+var ko = require("knockout");
 var infiniteScroll = require("folke-ko-infinite-scroll");
 /**
  * Creates an observable array with the SearchArray extensions
@@ -81,7 +81,7 @@ var ViewModel = (function () {
         };
         this.rows = params['rows'];
         var emptyMessage = this.rows.options.emptyMessage;
-        this.empty = ko.computed(function () { return !_this.rows.updating() && _this.rows().length === 0 ? emptyMessage : null; });
+        this.empty = ko.computed(function () { return !_this.rows.updating() && _this.rows().length === 0 ? emptyMessage : undefined; });
         this.columns = params['columns'] || this.rows.options.columns;
         this.nodes = nodes;
     }

@@ -52,8 +52,8 @@ export type SearchArray<T, TU> = Grid<T, SearchArrayParameters<TU>>;
  * A KnockoutObservableArray with methods to request more data
  */
 export interface Grid<T, TU extends Parameters> extends infiniteScroll.ScrollableArray<T, TU, Options<T, TU>> {
-    sortColumn: ko.Observable<string>;
-    subscription: ko.subscription<string>;
+    sortColumn: KnockoutObservable<string>;
+    subscription: KnockoutSubscription;
 }
 
 /**
@@ -93,7 +93,7 @@ export class ViewModel {
     public rows: SearchArray<any, any>;
     public columns: Column[];
     public nodes: Node[];
-    public empty: ko.Computed<string>;
+    public empty: KnockoutComputed<string|undefined>;
 
     public columnClass = (column: Column) => {
         const sortElement = column.sort;
@@ -126,7 +126,7 @@ export class ViewModel {
     constructor(params: any, nodes: Node[]) {
         this.rows = params['rows'];
         var emptyMessage = this.rows.options.emptyMessage;
-        this.empty = ko.computed(() => !this.rows.updating() && this.rows().length === 0 ? emptyMessage : null);
+        this.empty = ko.computed(() => !this.rows.updating() && this.rows().length === 0 ? emptyMessage : undefined);
         this.columns = params['columns'] || this.rows.options.columns;
         this.nodes = nodes;
     }

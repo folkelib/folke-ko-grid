@@ -1,4 +1,4 @@
-import * as ko from 'knockout';
+/// <reference types="knockout" />
 import * as infiniteScroll from "folke-ko-infinite-scroll";
 /** Describes a column */
 export interface Column {
@@ -31,8 +31,8 @@ export declare type SearchArray<T, TU> = Grid<T, SearchArrayParameters<TU>>;
  * A KnockoutObservableArray with methods to request more data
  */
 export interface Grid<T, TU extends Parameters> extends infiniteScroll.ScrollableArray<T, TU, Options<T, TU>> {
-    sortColumn: ko.Observable<string>;
-    subscription: ko.subscription<string>;
+    sortColumn: KnockoutObservable<string>;
+    subscription: KnockoutSubscription;
 }
 /**
  * Creates an observable array with the SearchArray extensions
@@ -57,8 +57,8 @@ export declare class ViewModel {
     rows: SearchArray<any, any>;
     columns: Column[];
     nodes: Node[];
-    empty: ko.Computed<string>;
-    columnClass: (column: Column) => ko.PureComputed<string>;
+    empty: KnockoutComputed<string | undefined>;
+    columnClass: (column: Column) => KnockoutComputed<string> | undefined;
     sort: (column: Column) => void;
     constructor(params: any, nodes: Node[]);
     dispose(): void;
